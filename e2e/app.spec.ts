@@ -55,6 +55,9 @@ test("parcours complet hors ligne : offre, dépôt, relance, entretien, persista
     .fill("Préparer les cas pricing");
   await page.getByRole("button", { name: "Enregistrer l’interaction" }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(
+    page.getByRole("status", { name: "Données enregistrées", exact: true }),
+  ).toBeVisible();
   await page.reload();
   await nav("Candidatures").click();
   await page
@@ -83,6 +86,9 @@ test("parcours complet hors ligne : offre, dépôt, relance, entretien, persista
   ).toHaveCount(0);
   await nav("Paramètres").click();
   await page.getByLabel("Masquer l’entreprise et le poste").check();
+  await expect(
+    page.getByRole("status", { name: "Données enregistrées", exact: true }),
+  ).toBeVisible();
   await page.reload();
   await nav("Paramètres").click();
   await expect(
@@ -97,6 +103,9 @@ test("parcours complet hors ligne : offre, dépôt, relance, entretien, persista
     await navigator.serviceWorker.ready;
   });
   await page.context().setOffline(true);
+  await expect(
+    page.getByRole("status", { name: "Données enregistrées", exact: true }),
+  ).toBeVisible();
   await page.reload();
   await nav(
     test.info().project.name.startsWith("mobile")
@@ -127,6 +136,9 @@ test("confidentialité, heure personnalisée, thème et capture mobile", async (
   await page.getByLabel("Heure par défaut").fill("09:30");
   await page.getByLabel("Thème").selectOption("dark");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(
+    page.getByRole("status", { name: "Données enregistrées", exact: true }),
+  ).toBeVisible();
   await page.reload();
   await page
     .getByRole("navigation", {

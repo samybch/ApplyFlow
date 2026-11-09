@@ -8,7 +8,7 @@ import type {
   Interaction,
 } from "../domain/model";
 import { statuses, closed } from "../domain/model";
-import { localDate } from "../domain/service";
+import { localDate, plusDays } from "../domain/service";
 import { Field, Toggle } from "./components";
 
 export function OfferForm({
@@ -182,6 +182,23 @@ export function ReminderForm({
               })}
           </select>
         </label>
+      )}
+      {value && (
+        <div className="filter-pills" aria-label="Raccourcis de report">
+          {[
+            [1, "Demain"],
+            [3, "Dans 3 jours"],
+            [7, "Dans une semaine"],
+          ].map(([days, label]) => (
+            <button
+              key={days}
+              type="button"
+              onClick={() => setDate(plusDays(localDate(), Number(days)))}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       )}
       <Field
         label="Date de relance"

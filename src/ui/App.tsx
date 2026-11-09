@@ -86,21 +86,26 @@ export function App() {
     [busy, setBusy] = useState(false);
   const store = useRef<Store | null>(null),
     loadId = useRef(0),
+    pendingWrites = useRef(0),
     fileInput = useRef<HTMLInputElement>(null);
   const guard = async (fn: () => Promise<unknown>) => {
     setError("");
+    pendingWrites.current++;
     setBusy(true);
     try {
       await fn();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
-      setBusy(false);
+      pendingWrites.current--;
+      setBusy(pendingWrites.current > 0);
     }
   };
   const update = async (fn: (s: State) => void) => {
     if (!store.current) throw new Error("Stockage indisponible");
+    ++loadId.current;
     const s = await store.current.update(fn);
+    ++loadId.current;
     setState(s);
   };
   const setSetting = <K extends keyof State["settings"]>(
@@ -127,12 +132,12 @@ export function App() {
   useEffect(() => {
     let disposed = false;
     let cleanup: () => void = () => {};
-    const reload = async () => {
-      if (!store.current) return;
+    const reload = async (reconcile = true) => {
+      if (!store.current || pendingWrites.current > 0) return;
       const i = ++loadId.current;
       const s = await store.current.read();
       if (!disposed && i === loadId.current) setState(s);
-      if (isAndroid()) {
+      if (isAndroid() && reconcile) {
         await nativeStore.reconcile();
         if (!disposed) setPermission(await permissionStatus());
         const nav = await nativeStore.consumeNavigation();
@@ -188,7 +193,8 @@ export function App() {
       });
     }
     const timer = window.setInterval(() => {
-      if (document.visibilityState === "visible") onStorage();
+      if (document.visibilityState === "visible")
+        void reload(false).catch((e) => setError(String(e)));
     }, 60000);
     return () => {
       disposed = true;
@@ -412,8 +418,15 @@ export function App() {
               <span className="breadcrumb">
                 Mon espace <span>/</span> {heading}
               </span>
-              <span className="offline">
-                <span className="status-dot" /> Stockage local
+              <span
+                className="offline"
+                role="status"
+                aria-label={
+                  busy ? "Enregistrement en cours" : "Données enregistrées"
+                }
+              >
+                <span className="status-dot" />{" "}
+                {busy ? "Enregistrement…" : "Stockage local"}
               </span>
             </header>
             <IonContent>

@@ -75,6 +75,19 @@ export function Dashboard({
           </button>
         ))}
       </div>
+      {!stats && (
+        <div className="mini-metrics" aria-label="Indicateurs de candidature">
+          <span>
+            <strong>{m.sent}</strong> candidatures envoyées
+          </span>
+          <span>
+            <strong>{m.response} %</strong> de réponses
+          </span>
+          <span>
+            <strong>{m.interview} %</strong> d’entretiens
+          </span>
+        </div>
+      )}
       <div className="section-heading">
         <h2>
           {stats ? "Analyse de votre recherche" : "Votre prochaine étape"}
