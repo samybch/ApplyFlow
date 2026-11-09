@@ -1,3 +1,4 @@
+import { Capacitor } from "@capacitor/core";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { setupIonicReact } from "@ionic/react";
@@ -17,13 +18,8 @@ createRoot(document.getElementById("root")!).render(
 // Cache only bundled assets; personal data stays in IndexedDB. Android ships its assets.
 if (
   import.meta.env.PROD &&
-  !location.protocol.startsWith("capacitor") &&
+  !Capacitor.isNativePlatform() &&
   "serviceWorker" in navigator
 ) {
-  void import("@capacitor/core")
-    .then(({ Capacitor }) => {
-      if (!Capacitor.isNativePlatform())
-        return navigator.serviceWorker.register("/sw.js");
-    })
-    .catch(console.error);
+  void navigator.serviceWorker.register("/sw.js").catch(console.error);
 }

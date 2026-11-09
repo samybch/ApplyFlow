@@ -11,3 +11,5 @@ android/**/build/
 *.jks
 .env*
 *.tsbuildinfo
+
+android/.kotlin/

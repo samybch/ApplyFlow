@@ -179,6 +179,11 @@ export function validateState(input: unknown): State {
     )
   )
     throw new Error("Historique ou date de dépôt incohérents");
+  const deadlines = s.reminders
+    .filter((r) => r.state === "active")
+    .map((r) => `${r.applicationId}|${r.dueDate}|${r.time}`);
+  if (new Set(deadlines).size !== deadlines.length)
+    throw new Error("Échéances de relance en double");
   for (const r of s.reminders)
     if (
       r.state === "active" &&

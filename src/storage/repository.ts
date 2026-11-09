@@ -16,7 +16,11 @@ interface NativeStore {
     revision: number;
   }): Promise<{ saved: boolean }>;
   reconcile(): Promise<void>;
-  consumeNavigation(): Promise<{ applicationId?: string; custom?: boolean }>;
+  consumeNavigation(): Promise<{
+    applicationId?: string;
+    reminderId?: string;
+    custom?: boolean;
+  }>;
   openSettings(): Promise<void>;
 }
 export const nativeStore = registerPlugin<NativeStore>("ApplyFlowStore");
