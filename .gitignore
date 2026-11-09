@@ -1,0 +1,15 @@
+node_modules/
+dist/
+work/
+playwright-report/
+test-results/
+coverage/
+android/.gradle/
+android/local.properties
+android/**/build/
+*.keystore
+*.jks
+.env*
+*.tsbuildinfo
+
+android/.kotlin/
