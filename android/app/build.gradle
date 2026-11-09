@@ -16,7 +16,15 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
-    testOptions { unitTests.includeAndroidResources = true }
+    testOptions {
+        unitTests.includeAndroidResources = true
+        unitTests.all {
+            def testHome = layout.buildDirectory.dir("test-home").get().asFile
+            testHome.mkdirs()
+            systemProperty "user.home", testHome.absolutePath
+            systemProperty "robolectric.dependency.repo.url", "https://repo.maven.apache.org/maven2"
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false

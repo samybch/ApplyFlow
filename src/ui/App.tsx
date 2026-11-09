@@ -134,6 +134,7 @@ export function App() {
       if (!disposed && i === loadId.current) setState(s);
       if (isAndroid()) {
         await nativeStore.reconcile();
+        if (!disposed) setPermission(await permissionStatus());
         const nav = await nativeStore.consumeNavigation();
         if (nav.applicationId && !disposed) {
           setSelected(nav.applicationId);
@@ -141,7 +142,9 @@ export function App() {
           if (nav.custom) {
             const r = s.reminders.find(
               (r) =>
-                r.applicationId === nav.applicationId && r.state === "active",
+                r.id === nav.reminderId &&
+                r.applicationId === nav.applicationId &&
+                r.state === "active",
             );
             if (r)
               setEditor({
@@ -230,7 +233,6 @@ export function App() {
     if (window.confirm(message))
       void guard(async () => {
         await update(fn);
-        setSelected(null);
       });
   };
   const openApp = (id: string) => {
@@ -1180,6 +1182,11 @@ export function App() {
             }
             close={() => setEditor(null)}
           >
+            {error && (
+              <p className="alert error" role="alert">
+                {error}
+              </p>
+            )}
             {editor.kind === "offer" ? (
               <OfferForm
                 value={editor.value}

@@ -199,3 +199,12 @@ describe("sauvegardes", () => {
     expect(exportCSV(s)).toContain('"\'=HYPERLINK(""x"")"');
   });
 });
+it("refuse une sauvegarde contenant deux échéances actives identiques avec des identifiants distincts", () => {
+  const { s, r } = fixture();
+  s.reminders.push({
+    ...r,
+    id: crypto.randomUUID(),
+    notificationId: s.nextNotificationId++,
+  });
+  expect(() => validateState(s)).toThrow("Échéances de relance en double");
+});
